@@ -1,9 +1,11 @@
 """Checks for updates for RxOT tools"""
 
+from urllib.error import URLError
 from urllib.parse import quote
 from urllib.request import urlopen
 from json import loads
 import platform
+import ssl
 
 def checkUpdate(url, toolName, version, host, hostVersion, preRelease = False):
     """Checks if an update is available"""
@@ -30,11 +32,13 @@ def checkUpdate(url, toolName, version, host, hostVersion, preRelease = False):
     if preRelease:
         args["preRelease"] = ""
 
-    response = request(url, args)
+    response = request(url, args, False)
     return loads(response.read())
 
-def request(url, args=None):
+def request(url, args=None, secured=True):
     """Builds a GET request with the args"""
+
+    response = ""
 
     if args:
         first = True
@@ -48,7 +52,13 @@ def request(url, args=None):
             val = args[arg]
             if val != "":
                 url = url + '=' + quote(val, safe='')
-    response = urlopen(url)
+    try:          
+        response = urlopen(url)
+    except URLError:
+        if not secured:
+            sslContext = ssl._create_unverified_context()
+            response = urlopen(url, context=sslContext)
+
     return response
 
 if __name__ == "__main__":
