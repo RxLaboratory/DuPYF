@@ -7,7 +7,7 @@ from json import loads
 import platform
 import ssl
 
-def checkUpdate(url, toolName, version, host, hostVersion, preRelease = False):
+def checkUpdate(url, toolName, version, host, hostVersion, preRelease = False, language = "en"):
     """Checks if an update is available"""
 
     # Check os
@@ -26,7 +26,8 @@ def checkUpdate(url, toolName, version, host, hostVersion, preRelease = False):
         "os": os,
         "osVersion": platform.version(),
         "host": host,
-        "hostVersion": hostVersion
+        "hostVersion": hostVersion,
+        "languageCode": language,
     }
 
     if preRelease:
@@ -52,7 +53,7 @@ def request(url, args=None, secured=True):
             val = args[arg]
             if val != "":
                 url = url + '=' + quote(val, safe='')
-    try:          
+    try:
         response = urlopen(url)
     except URLError:
         if not secured:
@@ -62,5 +63,5 @@ def request(url, args=None, secured=True):
     return response
 
 if __name__ == "__main__":
-    data = checkUpdate('https://api.rxlab.io', "DuBlast", "2.1.0", "Blender", "3.2.0")
+    data = checkUpdate('https://api.rxlab.io', "Ramses-Maya", "0.5.0", "Maya", "2023")
     print(data)
